@@ -1,0 +1,28 @@
+{
+    "weapons": [],
+    "weapon_types": [
+        {
+            "tipo": "Espada"
+        },
+        {
+            "tipo": "Arco"
+        },
+        {
+            "tipo": "Lanza"
+        }
+    ],
+    "tierlists": [
+        {
+            "tier": "S",
+            "armas": []
+        },
+        {
+            "tier": "A",
+            "armas": []
+        },
+        {
+            "tier": "B",
+            "armas": []
+        }
+    ]
+}
