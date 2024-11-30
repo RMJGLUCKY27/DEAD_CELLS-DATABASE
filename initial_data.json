@@ -1,28 +1,72 @@
 {
-    "weapons": [],
-    "weapon_types": [
+    "weapons": [
         {
-            "tipo": "Espada"
+            "weapon_id": 1,
+            "nombre": "Espada de Cristal",
+            "tipo_id": 1,
+            "caracteristicas": "Espada de alto daño que atraviesa a los enemigos.",
+            "imagen_url": "https://static.dead-cells.com/espada_cristal.png"
         },
         {
-            "tipo": "Arco"
+            "weapon_id": 2,
+            "nombre": "Martillo de Guerra",
+            "tipo_id": 2,
+            "caracteristicas": "Martillo pesado que inflige gran daño en área.",
+            "imagen_url": "https://static.dead-cells.com/martillo_guerra.png"
         },
         {
-            "tipo": "Lanza"
+            "weapon_id": 3,
+            "nombre": "Lanza de Fuego",
+            "tipo_id": 3,
+            "caracteristicas": "Lanza que inflige daño de fuego en el impacto.",
+            "imagen_url": "https://static.dead-cells.com/lanza_fuego.png"
+        },
+        {
+            "weapon_id": 4,
+            "nombre": "Arco de Hierro",
+            "tipo_id": 4,
+            "caracteristicas": "Arco que dispara flechas a larga distancia con alta precisión.",
+            "imagen_url": "https://static.dead-cells.com/arco_hierro.png"
         }
     ],
     "tierlists": [
         {
+            "tierlist_id": 1,
             "tier": "S",
-            "armas": []
+            "weapon_id": 1
         },
         {
+            "tierlist_id": 2,
             "tier": "A",
-            "armas": []
+            "weapon_id": 2
         },
         {
+            "tierlist_id": 3,
             "tier": "B",
-            "armas": []
+            "weapon_id": 3
+        },
+        {
+            "tierlist_id": 4,
+            "tier": "C",
+            "weapon_id": 4
+        }
+    ],
+    "weapon_types": [
+        {
+            "tipo_id": 1,
+            "nombre_tipo": "Espada"
+        },
+        {
+            "tipo_id": 2,
+            "nombre_tipo": "Martillo"
+        },
+        {
+            "tipo_id": 3,
+            "nombre_tipo": "Lanza"
+        },
+        {
+            "tipo_id": 4,
+            "nombre_tipo": "Arco"
         }
     ]
 }
