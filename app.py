@@ -1,109 +1,97 @@
-from pymongo import MongoClient
-import tkinter as tk
-from tkinter import Label, Frame, Scrollbar, Canvas, Listbox
-from tkinter import messagebox
-from PIL import Image, ImageTk
+import pymongo
+import matplotlib.pyplot as plt
 import requests
+from PIL import Image
 from io import BytesIO
+import textwrap
 
-# Conexión a la base de datos
-client = MongoClient('mongodb://localhost:27017/')
+# Conexión a MongoDB
+client = pymongo.MongoClient('mongodb://localhost:27017/')
 db = client['DEAD_CELLS']
 weapons = db['weapons']
 tierlists = db['tierlists']
 
-# Orden de prioridad para las tierlists
-tier_priority = {"S": 1, "A": 2, "B": 3, "C": 4, "D": 5}
+# Función para obtener armas y sus tiers
+def obtener_armas_por_tiers():
+    armas_por_tier = {'S': [], 'A': [], 'B': [], 'C': [], 'D': []}
 
-def mostrar_arma_por_tier(tierlist):
-    # Crear ventana para mostrar las armas de la tierlist seleccionada
-    top = tk.Toplevel()
-    top.title(f"Armas en Tier {tierlist['tier']}")
-    top.geometry("1000x700")
+    for tierlist in tierlists.find():
+        tier = tierlist.get('tier', 'Desconocido')
+        armas_ids = tierlist.get('armas', [])
+        for arma_id in armas_ids:
+            arma = weapons.find_one({"_id": arma_id})
+            if arma:
+                armas_por_tier[tier].append({
+                    "nombre": arma['nombre'],
+                    "imagen_url": arma.get('imagen_url', '')
+                })
 
-    # Canvas con scrollbar
-    canvas = Canvas(top)
-    scrollbar = Scrollbar(top, orient="vertical", command=canvas.yview)
-    scrollable_frame = Frame(canvas)
+    return armas_por_tier
 
-    scrollable_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-    )
+# Función para descargar la imagen desde una URL
+def obtener_imagen(imagen_url):
+    try:
+        response = requests.get(imagen_url)
+        if response.status_code == 200:
+            img = Image.open(BytesIO(response.content))
+            img = img.resize((64, 64))  # Redimensionamos a un tamaño uniforme
+            return img
+    except Exception as e:
+        print(f"Error al descargar la imagen: {e}")
+    return None
 
-    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
+# Función para convertir colores RGB a valores normalizados de matplotlib
+def rgb_color(rgb_tuple):
+    return tuple(c / 255.0 for c in rgb_tuple)
 
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+# Función para mostrar las armas en un formato similar al de la imagen
+def mostrar_tierlist():
+    armas_por_tier = obtener_armas_por_tiers()
+    tiers = ['S', 'A', 'B', 'C', 'D']
+    colores = {
+        'S': rgb_color((255, 102, 102)),  # Rojo pastel
+        'A': rgb_color((255, 178, 102)),  # Naranja suave
+        'B': rgb_color((102, 255, 178)),  # Verde agua
+        'C': rgb_color((102, 178, 255)),  # Azul claro
+        'D': rgb_color((204, 153, 255)),  # Morado pastel
+    }
 
-    # Mostrar armas del tier seleccionado
-    armas_ids = tierlist["armas"]
-    for arma_id in armas_ids:
-        arma = weapons.find_one({"_id": arma_id})
-        if arma:
-            # Crear sub-marco para cada arma
-            arma_frame = Frame(scrollable_frame, pady=5, padx=5)
-            arma_frame.pack(anchor="w")
+    # Configurar el gráfico
+    fig, ax = plt.subplots(len(tiers), 1, figsize=(12, 3 * len(tiers)))
+    if len(tiers) == 1:
+        ax = [ax]
 
-            # Descargar y mostrar imagen desde URL (si disponible)
-            try:
-                if "imagen_url" in arma:
-                    response = requests.get(arma["imagen_url"])
-                    img_data = BytesIO(response.content)
-                    img = Image.open(img_data).resize((50, 50))
-                    img_tk = ImageTk.PhotoImage(img)
-                    img_label = Label(arma_frame, image=img_tk)
-                    img_label.image = img_tk
-                    img_label.pack(side="left", padx=5)
-                else:
-                    # Si no hay imagen, mostrar texto
-                    img_label = Label(arma_frame, text="[Sin imagen]")
-                    img_label.pack(side="left", padx=5)
-            except Exception:
-                # Si la descarga de la imagen falla, mostrar un marcador de error
-                img_label = Label(arma_frame, text="[Error al cargar imagen]")
-                img_label.pack(side="left", padx=5)
+    max_por_fila = 10  # Máximo de armas por fila
 
-            # Información del arma
-            info_label = Label(arma_frame, text=f"{arma['nombre']} ({arma['tipo']})", font=("Arial", 12))
-            info_label.pack(side="left")
+    for i, tier in enumerate(tiers):
+        armas = armas_por_tier[tier]
+        filas = -(-len(armas) // max_por_fila)  # Calcular número de filas necesarias
+        ax[i].set_facecolor(colores[tier])  # Fondo de color según el tier
+        ax[i].set_xlim(0, max_por_fila + 1)  # Ajustar el ancho para múltiples filas
+        ax[i].set_ylim(0, filas * 1.5)  # Ajustar el alto según el número de filas
+        ax[i].axis('off')
 
-def mostrar_tierlists():
-    # Crear ventana principal
-    root = tk.Tk()
-    root.title("Selecciona una Tier List de Dead Cells")
-    root.geometry("500x400")
+        # Agregar título del tier
+        ax[i].text(-0.5, filas * 1.25, f"Tier {tier}", fontsize=16, va='center', ha='center', color='black', bbox=dict(facecolor=colores[tier], edgecolor='none'))
 
-    # Mostrar mensaje de bienvenida
-    welcome_label = Label(root, text="BIENVENIDO A LA TIERLIST DE DEAD CELLS", font=("Arial", 16, "bold"))
-    welcome_label.pack(pady=10)
+        # Mostrar las imágenes de las armas en múltiples filas
+        for j, arma in enumerate(armas):
+            fila_actual = j // max_por_fila
+            columna_actual = j % max_por_fila
+            x_pos = columna_actual + 1
+            y_pos = filas - fila_actual - 1  # Invertir para que la primera fila esté arriba
 
-    # Listbox para mostrar las tierlists disponibles
-    tierlist_listbox = Listbox(root, height=10, width=50, selectmode="single")
-    tierlist_listbox.pack(pady=10)
+            img = obtener_imagen(arma['imagen_url'])
+            if img:
+                ax[i].imshow(img, extent=[x_pos - 0.4, x_pos + 0.4, y_pos + 0.2, y_pos + 1])  # Posicionar la imagen
 
-    # Obtener todas las tierlists desde MongoDB y aplicamos la prioridad
-    tierlist_options = list(tierlists.find())
-    tierlist_options.sort(key=lambda x: tier_priority.get(x["tier"], float("inf")))
+            # Ajustar el nombre debajo de la imagen con texto envuelto
+            nombre_ajustado = textwrap.fill(arma['nombre'], width=10)  # Limitar a 10 caracteres por línea
+            ax[i].text(x_pos, y_pos - 0.1, nombre_ajustado, fontsize=8, va='top', ha='center', color='black')
 
-    # Agregar tierlists al Listbox en orden de prioridad
-    for tierlist in tierlist_options:
-        tierlist_listbox.insert(tk.END, f"Tier {tierlist['tier']}")
+    plt.tight_layout()
+    plt.show()
 
-    def on_select_tierlist(event):
-        # Obtener la tierlist seleccionada
-        selected_index = tierlist_listbox.curselection()
-        if selected_index:
-            selected_tierlist = tierlist_options[selected_index[0]]
-            mostrar_arma_por_tier(selected_tierlist)
-        else:
-            messagebox.showwarning("Advertencia", "Por favor, selecciona una tierlist.")
-
-    # Vincular evento de selección
-    tierlist_listbox.bind("<<ListboxSelect>>", on_select_tierlist)
-
-    root.mainloop()
-
-if __name__ == '__main__':
-    mostrar_tierlists()
+# Ejecutar la visualización
+if __name__ == "__main__":
+    mostrar_tierlist()
