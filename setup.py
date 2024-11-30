@@ -97,11 +97,17 @@ def buscar_arma():
     print("\n--- Buscar arma ---")
     criterio = input("Buscar por nombre: ")
     arma = weapons.find_one({"nombre": criterio})
+    
     if arma:
+        # Usamos .get() para evitar el KeyError si 'tipo' no existe
+        tipo = arma.get('tipo', 'Tipo no disponible')  # Si 'tipo' no está presente, muestra 'Tipo no disponible'
+        caracteristicas = arma.get('caracteristicas', 'Características no disponibles')
+        imagen_url = arma.get('imagen_url', 'Imagen no disponible')
+        
         print(f"\nNombre: {arma['nombre']}")
-        print(f"Tipo: {arma['tipo']}")
-        print(f"Características: {arma['caracteristicas']}")
-        print(f"Imagen URL: {arma['imagen_url']}")
+        print(f"Tipo: {tipo}")
+        print(f"Características: {caracteristicas}")
+        print(f"Imagen URL: {imagen_url}")
     else:
         print("Arma no encontrada.")
 
@@ -133,10 +139,15 @@ def mostrar_tierlists():
     print("\n--- Mostrar tierlists ---")
     for tierlist in tierlists.find():
         print(f"\nTier: {tierlist['tier']}")
-        for arma_id in tierlist['armas']:
-            arma = weapons.find_one({"_id": arma_id})
-            if arma:
-                print(f"- {arma['nombre']} ({arma['tipo']})")
+        
+        # Verificamos si el campo 'armas' existe y no está vacío
+        if 'armas' in tierlist and tierlist['armas']:
+            for arma_id in tierlist['armas']:
+                arma = weapons.find_one({"_id": arma_id})
+                if arma:
+                    print(f"- {arma['nombre']} ({arma['tipo']})")
+        else:
+            print("No hay armas asignadas a esta tierlist.")
 
 # Función para actualizar un arma
 def actualizar_arma():
