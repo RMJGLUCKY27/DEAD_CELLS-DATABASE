@@ -1,12 +1,4 @@
-# DeepWiki Q&A with Code Context for Repository: RMJGLUCKY27/DEAD_CELLS-DATABASE
 
-
-## Q1
-
-dame un resumen para readme
-
-
-### Answer
 
 ## Resumen para README - DEAD_CELLS-DATABASE
 
