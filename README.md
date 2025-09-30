@@ -1,30 +1,28 @@
-
-
 ## Resumen para README - DEAD_CELLS-DATABASE
 
-Este proyecto es un sistema de gestión de base de datos para armas del videojuego Dead Cells, que permite crear, administrar y visualizar tierlists de armas DEAD_CELLS-DATABASE:1-11 . El sistema utiliza MongoDB como base de datos y está compuesto por tres componentes principales que trabajan de forma independiente.
+Este proyecto es un sistema de gestión de base de datos para armas del videojuego Dead Cells, que permite crear, administrar y visualizar tierlists de armas [1](#0-0) . El sistema utiliza MongoDB como base de datos y está compuesto por tres componentes principales que trabajan de forma independiente.
 
 ## Componentes del Sistema
 
 ### 1. Inicialización de Base de Datos (`cargainicial.py`)
-Carga los datos iniciales desde un archivo JSON a las colecciones de MongoDB DEAD_CELLS-DATABASE:16-51 . Establece las tres colecciones principales: `weapons`, `weapon_types` y `tierlists` DEAD_CELLS-DATABASE:10-13 .
+Carga los datos iniciales desde un archivo JSON a las colecciones de MongoDB [2](#0-1) . Establece las tres colecciones principales: `weapons`, `weapon_types` y `tierlists` [3](#0-2) .
 
 ### 2. Interfaz de Gestión CLI (`setup.py`)
-Proporciona un menú interactivo para administrar las armas y tierlists con las siguientes funcionalidades DEAD_CELLS-DATABASE:184-217 :
+Proporciona un menú interactivo para administrar las armas y tierlists con las siguientes funcionalidades [4](#0-3) :
 - Agregar nuevas armas
 - Buscar armas existentes
 - Crear y gestionar tierlists
 - Actualizar y eliminar armas
 
 ### 3. Visualización de Tierlists (`app.py`)
-Genera visualizaciones gráficas de las tierlists usando matplotlib, mostrando las armas organizadas por tiers (S, A, B, C, D) con sus respectivas imágenes DEAD_CELLS-DATABASE:48-97 .
+Genera visualizaciones gráficas de las tierlists usando matplotlib, mostrando las armas organizadas por tiers (S, A, B, C, D) con sus respectivas imágenes [5](#0-4) .
 
 ## Estructura de Datos
 
 El sistema maneja tres tipos de documentos principales:
-- **Armas**: Contienen nombre, tipo, características e imagen_url DEAD_CELLS-DATABASE:2-31 
-- **Tierlists**: Organizan las armas por niveles de tier DEAD_CELLS-DATABASE:32-53 
-- **Tipos de Arma**: Categorizan las armas por tipo DEAD_CELLS-DATABASE:54-60 
+- **Armas**: Contienen nombre, tipo, características e imagen_url [6](#0-5) 
+- **Tierlists**: Organizan las armas por niveles de tier [7](#0-6) 
+- **Tipos de Arma**: Categorizan las armas por tipo [8](#0-7) 
 
 ## Requisitos
 - MongoDB (localhost:27017)
@@ -37,17 +35,14 @@ El sistema maneja tres tipos de documentos principales:
 
 **Notes**
 
-El sistema está diseñado con arquitectura modular donde cada componente puede ejecutarse independientemente después de la inicialización. La conexión a MongoDB sigue un patrón consistente en los tres archivos DEAD_CELLS-DATABASE:4-11 . El proyecto incluye manejo de errores y validación de datos para garantizar la integridad de la información.
+El sistema está diseñado con arquitectura modular donde cada componente puede ejecutarse independientemente después de la inicialización. La conexión a MongoDB sigue un patrón consistente en los tres archivos [9](#0-8) . El proyecto incluye manejo de errores y validación de datos para garantizar la integridad de la información.
 
 Wiki pages you might want to explore:
 - [System Components (RMJGLUCKY27/DEAD_CELLS-DATABASE)](/wiki/RMJGLUCKY27/DEAD_CELLS-DATABASE#3)
 
-
 ### Citations
 
-
 **File:** setup.py (L1-11)
-
 ```python
 import time
 from pymongo import MongoClient
@@ -63,7 +58,6 @@ tierlists = db['tierlists']
 ```
 
 **File:** setup.py (L184-217)
-
 ```python
 # Menú principal
 def menu():
@@ -102,7 +96,6 @@ if __name__ == "__main__":
 ```
 
 **File:** cargainicial.py (L10-13)
-
 ```python
 # Crear colecciones
 weapons = db['weapons']
@@ -111,7 +104,6 @@ tierlists = db['tierlists']
 ```
 
 **File:** cargainicial.py (L16-51)
-
 ```python
 def cargar_documentos_desde_json(archivo):
     try:
@@ -152,7 +144,6 @@ cargar_documentos_desde_json('initial_data.json')
 ```
 
 **File:** app.py (L48-97)
-
 ```python
 def mostrar_tierlist():
     armas_por_tier = obtener_armas_por_tiers()
@@ -207,7 +198,6 @@ if __name__ == "__main__":
 ```
 
 **File:** initial_data.json (L2-31)
-
 ```json
     "weapons": [
         {
@@ -242,7 +232,6 @@ if __name__ == "__main__":
 ```
 
 **File:** initial_data.json (L32-53)
-
 ```json
     "tierlists": [
         {
@@ -269,7 +258,6 @@ if __name__ == "__main__":
 ```
 
 **File:** initial_data.json (L54-60)
-
 ```json
     "weapon_types": [
         {
@@ -278,6 +266,5 @@ if __name__ == "__main__":
         },
         {
 ```
-
 
  
